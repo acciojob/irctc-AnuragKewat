@@ -55,18 +55,23 @@ public class TrainService {
         int noOfSeats = train.getNoOfSeats();
         List<Ticket> bookedTickets = train.getBookedTickets();
         String route = train.getRoute();
+
         String toStation = seatAvailabilityEntryDto.getToStation().toString();
         String fromStation = seatAvailabilityEntryDto.getFromStation().toString();
 
         int count=0;
-        if(route.indexOf(toStation) < route.indexOf(fromStation)) {
+        if(route.indexOf(toStation) > route.indexOf(fromStation)) {
             for(Ticket ticket: bookedTickets) {
-                if(ticket.getFromStation().toString().equals(fromStation)) {
-                    count++;
+                String[] str = route.split("_");
+                int from=0, to=0;
+                int fromTicket=0, toTicket=0;
+                for(int i=0; i<str.length; i++) {
+                    if(str[i].equals(fromStation)) from = i;
+                    else if(str[i].equals(toStation)) to = i;
+                    if(str[i].equals(ticket.getFromStation().toString())) fromTicket = i;
+                    else if(str[i].equals(ticket.getToStation().toString())) toTicket = i;
                 }
-                else if(ticket.getToStation().toString().equals(toStation)) {
-                    count++;
-                }
+                if(to<=fromTicket && from>=toTicket) count++;
             }
         }
 
@@ -88,7 +93,7 @@ public class TrainService {
 
         int count=0;
         for(Ticket ticket: tickets) {
-            if(ticket.getFromStation().equals(station)) count++;
+            if(ticket.getFromStation().toString().equals(station.toString())) count++;
         }
 
         return count;
@@ -130,6 +135,7 @@ public class TrainService {
                 for(int i=0; i<str.length; i++) {
                     if(str[i].equals(station.toString())) {
                         index = i;
+                        break;
                     }
                 }
                 LocalTime localTime = train.getDepartureTime().plusHours(index);
