@@ -85,7 +85,6 @@ public class TrainService {
         //throw new Exception("Train is not passing from this station");
         //  in a happy case we need to find out the number of such people.
         Train train = trainRepository.findById(trainId).get();
-        if(train == null) throw new RuntimeException("Train is not passing from this station");
 
         if(!train.getRoute().contains(station.toString())) throw new RuntimeException("Train is not passing from this station");
 
@@ -93,7 +92,7 @@ public class TrainService {
 
         int count=0;
         for(Ticket ticket: tickets) {
-            if(ticket.getFromStation().toString().equals(station.toString())) count++;
+            if(ticket.getFromStation().equals(station) && train.getRoute().contains(ticket.getToStation().toString())) count++;
         }
 
         return count;
@@ -138,7 +137,7 @@ public class TrainService {
                         break;
                     }
                 }
-                LocalTime localTime = train.getDepartureTime().plusHours(index);
+                LocalTime localTime = train.getDepartureTime();
                 if(localTime.isAfter(startTime) && localTime.isBefore(endTime)) id.add(train.getTrainId());
             }
         }
