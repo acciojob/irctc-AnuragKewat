@@ -126,13 +126,13 @@ public class TrainService {
         //in problem statement)
         //You can also assume the seconds and milli seconds value will be 0 in a LocalTime format.
 
+        List<Integer> TrainList = new ArrayList<>();
         List<Train> trains = trainRepository.findAll();
-        List<Integer> id = new ArrayList<>();
         for(Train t:trains){
             String s = t.getRoute();
             String[] ans = s.split("_");
             for(int i=0;i<ans.length;i++){
-                if(Objects.equals(ans[i], String.valueOf(station))){
+                if(ans[i].equals(station.toString())){
                     int startTimeInMin = (startTime.getHour() * 60) + startTime.getMinute();
                     int lastTimeInMin = (endTime.getHour() * 60) + endTime.getMinute();
 
@@ -140,12 +140,11 @@ public class TrainService {
                     int departureTimeInMin = (t.getDepartureTime().getHour() * 60) + t.getDepartureTime().getMinute();
                     int reachingTimeInMin  = departureTimeInMin + (i * 60);
                     if(reachingTimeInMin>=startTimeInMin && reachingTimeInMin<=lastTimeInMin)
-                        id.add(t.getTrainId());
+                        TrainList.add(t.getTrainId());
                 }
             }
         }
-
-        return id;
+        return TrainList;
     }
 
 }
