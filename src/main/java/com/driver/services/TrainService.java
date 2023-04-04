@@ -95,7 +95,7 @@ public class TrainService {
             if(ticket.getFromStation().equals(station) && train.getRoute().contains(ticket.getToStation().toString())) count++;
         }
 
-        return count;
+        return count+1;
     }
 
     public Integer calculateOldestPersonTravelling(Integer trainId){
@@ -137,7 +137,7 @@ public class TrainService {
                         break;
                     }
                 }
-                LocalTime localTime = train.getDepartureTime();
+                LocalTime localTime = train.getDepartureTime().plusHours(index);
                 if(localTime.isAfter(startTime) && localTime.isBefore(endTime)) id.add(train.getTrainId());
             }
         }
