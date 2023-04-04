@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class TrainService {
@@ -92,10 +93,10 @@ public class TrainService {
 
         int count=0;
         for(Ticket ticket: tickets) {
-            if(ticket.getFromStation().equals(station) && train.getRoute().contains(ticket.getToStation().toString())) count++;
+            if(ticket.getFromStation().equals(station) && train.getRoute().contains(ticket.getToStation().toString())) count+=ticket.getPassengersList().size();
         }
 
-        return count+1;
+        return count;
     }
 
     public Integer calculateOldestPersonTravelling(Integer trainId){
@@ -127,18 +128,20 @@ public class TrainService {
 
         List<Train> trains = trainRepository.findAll();
         List<Integer> id = new ArrayList<>();
-        for(Train train: trains) {
-            if(train.getRoute().contains(station.toString())) {
-                String[] str = train.getRoute().split("_");
-                int index = 0;
-                for(int i=0; i<str.length; i++) {
-                    if(str[i].equals(station.toString())) {
-                        index = i;
-                        break;
-                    }
+        for(Train t:trains){
+            String s = t.getRoute();
+            String[] ans = s.split("_");
+            for(int i=0;i<ans.length;i++){
+                if(Objects.equals(ans[i], String.valueOf(station))){
+                    int startTimeInMin = (startTime.getHour() * 60) + startTime.getMinute();
+                    int lastTimeInMin = (endTime.getHour() * 60) + endTime.getMinute();
+
+
+                    int departureTimeInMin = (t.getDepartureTime().getHour() * 60) + t.getDepartureTime().getMinute();
+                    int reachingTimeInMin  = departureTimeInMin + (i * 60);
+                    if(reachingTimeInMin>=startTimeInMin && reachingTimeInMin<=lastTimeInMin)
+                        id.add(t.getTrainId());
                 }
-                LocalTime localTime = train.getDepartureTime().plusHours(index);
-                if(localTime.isAfter(startTime) && localTime.isBefore(endTime)) id.add(train.getTrainId());
             }
         }
 
